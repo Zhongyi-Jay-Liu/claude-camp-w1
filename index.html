@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Camp · Week 1 — Jay Liu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #1a2740;
+  --ink-soft:   #3d4f70;
+  --ink-faint:  #6f80a0;
+  --paper:      #f3f6fb;
+  --paper-2:    #e8eef7;
+  --card:       #ffffff;
+  --accent:     #4a6fa5;
+  --accent-2:   #6b8cb8;
+  --accent-3:   #8aa8cd;
+  --mist:       #d6e1ee;
+  --line:       #cdd9e8;
+  --code-bg:    #1e2a44;
+  --code-ink:   #c9d6ec;
+  --code-key:   #8aafe0;
+  --code-str:   #a8c8a0;
+  --code-com:   #6f80a0;
+  --code-num:   #d4a373;
+  --shadow:     0 1px 2px rgba(26, 39, 64, 0.04), 0 8px 24px rgba(26, 39, 64, 0.06);
+  --shadow-lg:  0 4px 12px rgba(26, 39, 64, 0.06), 0 24px 48px rgba(26, 39, 64, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  font-size: 16px;
+  background-image:
+    radial-gradient(ellipse at top left, rgba(138, 168, 205, 0.18), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(107, 140, 184, 0.12), transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ===== HEADER ===== */
+header {
+  padding: 80px 0 60px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 300;
+}
+
+.subtitle {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--ink-soft);
+  font-style: italic;
+  max-width: 580px;
+  line-height: 1.5;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  margin-top: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+.meta span strong {
+  color: var(--ink);
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* ===== TABLE OF CONTENTS ===== */
+.toc {
+  margin: 50px 0 0;
+  padding: 28px 32px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+}
+
+.toc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 18px;
+}
+
+.toc ol {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  counter-reset: toc;
+}
+
+.toc li {
+  counter-increment: toc;
+}
+
+.toc a {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.toc a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ===== PROJECTS ===== */
+main {
+  padding: 80px 0;
+}
+
+.project {
+  margin-bottom: 100px;
+  scroll-margin-top: 40px;
+}
+
+.project-header {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.project-num {
+  font-family: 'Fraunces', serif;
+  font-size: 72px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--accent-3);
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: clamp(26px, 3.5vw, 34px);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.project-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  padding-left: 96px;
+  letter-spacing: 0.05em;
+}
+
+.project-desc {
+  font-size: 16px;
+  color: var(--ink-soft);
+  max-width: 640px;
+  margin: 0 0 36px 96px;
+  line-height: 1.65;
+}
+
+@media (max-width: 640px) {
+  .project-tag, .project-desc { padding-left: 0; margin-left: 0; }
+  .project-header { flex-direction: column; gap: 4px; }
+  .project-num { font-size: 48px; }
+}
+
+/* ===== CARD WITH CODE + DEMO ===== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-2);
+}
+
+.tab {
+  padding: 14px 22px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+}
+
+.tab:hover { color: var(--ink-soft); }
+
+.tab.active {
+  color: var(--accent);
+  background: var(--card);
+  border-bottom-color: var(--accent);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== CODE BLOCK ===== */
+pre {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 28px 32px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+pre .k { color: var(--code-key); }
+pre .s { color: var(--code-str); }
+pre .c { color: var(--code-com); font-style: italic; }
+pre .n { color: var(--code-num); }
+pre .f { color: #b8d4e8; }
+
+/* ===== DEMO ===== */
+.demo {
+  padding: 36px 32px;
+}
+
+.demo-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.demo label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.field {
+  flex: 1;
+  min-width: 140px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--card);
+  box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+}
+
+button.run {
+  padding: 12px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: white;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-end;
+}
+
+button.run:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.result {
+  margin-top: 20px;
+  padding: 20px 22px;
+  background: linear-gradient(135deg, var(--paper-2), var(--paper));
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  min-height: 24px;
+}
+
+.result.empty {
+  color: var(--ink-faint);
+  font-style: italic;
+  border-left-color: var(--line);
+}
+
+.result strong { color: var(--accent); font-weight: 600; }
+
+/* ===== FOOTER ===== */
+footer {
+  padding: 60px 0 80px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+footer .ornament {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  color: var(--accent-3);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-3);
+}
+
+footer a:hover { color: var(--ink); }
+
+/* ===== SCROLLBAR ===== */
+pre::-webkit-scrollbar { height: 8px; }
+pre::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+pre::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+/* ===== ANIMATION ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.project { animation: fadeUp 0.6s ease-out backwards; }
+.project:nth-child(1) { animation-delay: 0.05s; }
+.project:nth-child(2) { animation-delay: 0.1s; }
+.project:nth-child(3) { animation-delay: 0.15s; }
+.project:nth-child(4) { animation-delay: 0.2s; }
+.project:nth-child(5) { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="eyebrow">Money School · Claude AI Special Learning Group</div>
+  <h1><em>Week 1</em></h1>
+  <p class="subtitle">A small collection of five Python exercises — calmly written with Claude's assistance.</p>
+  <div class="meta">
+    <span><strong>Jay Liu</strong></span>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">Contents</div>
+    <ol>
+      <li><a href="#p1">Temperature Converter</a></li>
+      <li><a href="#p2">Formatted Greeting</a></li>
+      <li><a href="#p3">Catering Cost</a></li>
+      <li><a href="#p4">Password Generator</a></li>
+      <li><a href="#p5">BMI Calculator</a></li>
+    </ol>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===== PROJECT 1 ===== -->
+<section class="project" id="p1">
+  <div class="project-header">
+    <div class="project-num">01</div>
+    <h2>Temperature Converter</h2>
+  </div>
+  <div class="project-tag">1_Temperature_converter.py</div>
+  <p class="project-desc">A bidirectional converter between Celsius and Fahrenheit. Validates input, handles unit selection, and gracefully reports invalid entries.</p>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="demo1">▸ Live Demo</button>
+      <button class="tab" data-tab="code1">⟨/⟩ Source</button>
+    </div>
+
+    <div class="tab-content active" id="demo1">
+      <div class="demo">
+        <div class="demo-row">
+          <div class="field">
+            <label>Temperature</label>
+            <input type="number" id="t1-temp" placeholder="e.g. 25" step="any">
+          </div>
+          <div class="field">
+            <label>From Unit</label>
+            <select id="t1-unit">
+              <option value="C">Celsius (°C)</option>
+              <option value="F">Fahrenheit (°F)</option>
+            </select>
+          </div>
+          <button class="run" onclick="runTemp()">Convert</button>
+        </div>
+        <div class="result empty" id="t1-out">Enter a temperature to convert.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="code1">
+<pre><span class="c"># Temperature converter between Celsius and Fahrenheit</span>
+<span class="k">def</span> <span class="f">main</span>():
+    <span class="k">try</span>:
+        temp = <span class="f">float</span>(<span class="f">input</span>(<span class="s">"Enter the temperature: "</span>))
+        unit = <span class="f">input</span>(<span class="s">"Enter the unit (C for Celsius, F for Fahrenheit): "</span>).upper().strip()
+        <span class="k">if</span> unit == <span class="s">'C'</span>:
+            converted_temp = (temp * <span class="n">9</span>/<span class="n">5</span>) + <span class="n">32</span>
+            <span class="f">print</span>(<span class="s">f"{temp}°C is equal to {converted_temp:.2f}°F"</span>)
+        <span class="k">elif</span> unit == <span class="s">'F'</span>:
+            converted_temp = (temp - <span class="n">32</span>) * <span class="n">5</span>/<span class="n">9</span>
+            <span class="f">print</span>(<span class="s">f"{temp}°F is equal to {converted_temp:.2f}°C"</span>)
+        <span class="k">else</span>:
+            <span class="f">print</span>(<span class="s">"Invalid unit. Please enter 'C' or 'F'."</span>)
+    <span class="k">except</span> ValueError:
+        <span class="f">print</span>(<span class="s">"Invalid temperature. Please enter a numeric value."</span>)
+
+<span class="f">main</span>()</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECT 2 ===== -->
+<section class="project" id="p2">
+  <div class="project-header">
+    <div class="project-num">02</div>
+    <h2>Formatted Greeting</h2>
+  </div>
+  <div class="project-tag">2_Formatted_greeting.py</div>
+  <p class="project-desc">A warm greeting that adapts to the visitor's age — single-digit superstars, members of the 20s club, the 30s, and beyond. Built with input validation and structured functions.</p>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="demo2">▸ Live Demo</button>
+      <button class="tab" data-tab="code2">⟨/⟩ Source</button>
+    </div>
+
+    <div class="tab-content active" id="demo2">
+      <div class="demo">
+        <div class="demo-row">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" id="t2-name" placeholder="e.g. Jay">
+          </div>
+          <div class="field">
+            <label>Age</label>
+            <input type="number" id="t2-age" placeholder="e.g. 28" min="1" max="149">
+          </div>
+          <button class="run" onclick="runGreet()">Greet</button>
+        </div>
+        <div class="result empty" id="t2-out">Enter your details to receive a greeting.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="code2">
+<pre><span class="k">def</span> <span class="f">get_user_input</span>():
+    name = <span class="f">input</span>(<span class="s">"Enter your name: "</span>).strip()
+    age = <span class="f">input</span>(<span class="s">"Enter your age: "</span>).strip()
+    <span class="k">return</span> name, age
+
+
+<span class="k">def</span> <span class="f">validate_age</span>(age: <span class="f">str</span>) -> <span class="f">int</span>:
+    <span class="k">if not</span> age.isdigit():
+        <span class="k">raise</span> ValueError(<span class="s">"Age must be a positive integer."</span>)
+    age_int = <span class="f">int</span>(age)
+    <span class="k">if not</span> (<span class="n">0</span> < age_int < <span class="n">150</span>):
+        <span class="k">raise</span> ValueError(<span class="s">"Age must be between 1 and 149."</span>)
+    <span class="k">return</span> age_int
+
+
+<span class="k">def</span> <span class="f">format_greeting</span>(name: <span class="f">str</span>, age: <span class="f">int</span>) -> <span class="f">str</span>:
+    <span class="k">if not</span> name:
+        <span class="k">raise</span> ValueError(<span class="s">"Name cannot be empty."</span>)
+    <span class="k">if</span> age < <span class="n">10</span>:
+        age_group = <span class="s">"a single-digit superstar"</span>
+    <span class="k">else</span>:
+        decade = (age // <span class="n">10</span>) * <span class="n">10</span>
+        age_group = <span class="s">f"a proud member of the {decade}s club"</span>
+    <span class="k">return</span> (
+        <span class="s">f"Hello, {name}! 👋\n"</span>
+        <span class="s">f"You are {age} years old — {age_group}!"</span>
+    )
+
+
+<span class="k">def</span> <span class="f">main</span>():
+    name, raw_age = get_user_input()
+    age = validate_age(raw_age)
+    <span class="f">print</span>(format_greeting(name, age))
+
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    main()</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECT 3 ===== -->
+<section class="project" id="p3">
+  <div class="project-header">
+    <div class="project-num">03</div>
+    <h2>Catering Cost Calculator</h2>
+  </div>
+  <div class="project-tag">3_Catering_cost_calculator.py</div>
+  <p class="project-desc">An itemised bill calculator. Accepts tip percentages with or without the % symbol, validates non-negative numbers, and prints a tidy receipt-style breakdown.</p>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="demo3">▸ Live Demo</button>
+      <button class="tab" data-tab="code3">⟨/⟩ Source</button>
+    </div>
+
+    <div class="tab-content active" id="demo3">
+      <div class="demo">
+        <div class="demo-row">
+          <div class="field">
+            <label>Bill Amount ($)</label>
+            <input type="number" id="t3-bill" placeholder="e.g. 120.00" step="any" min="0">
+          </div>
+          <div class="field">
+            <label>Tip (%)</label>
+            <input type="text" id="t3-tip" placeholder="e.g. 18 or 18%">
+          </div>
+          <button class="run" onclick="runTip()">Calculate</button>
+        </div>
+        <div class="result empty" id="t3-out">Enter values to see the breakdown.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="code3">
+<pre><span class="k">def</span> <span class="f">parse_tip</span>(raw: <span class="f">str</span>) -> <span class="f">float</span>:
+    <span class="s">"""Accept '18', '18%', or '18 %' — always return a plain float."""</span>
+    <span class="k">return</span> <span class="f">float</span>(raw.strip().rstrip(<span class="s">"%"</span>).strip())
+
+<span class="k">def</span> <span class="f">get_float</span>(prompt: <span class="f">str</span>, parser=<span class="f">float</span>) -> <span class="f">float</span>:
+    <span class="s">"""Prompt until the user enters a valid non-negative number."""</span>
+    <span class="k">while True</span>:
+        <span class="k">try</span>:
+            value = parser(<span class="f">input</span>(prompt))
+            <span class="k">if</span> value < <span class="n">0</span>: <span class="f">print</span>(<span class="s">"  ⚠  Please enter a non-negative number."</span>)
+            <span class="k">else</span>: <span class="k">return</span> value
+        <span class="k">except</span> ValueError:
+            <span class="f">print</span>(<span class="s">"  ⚠  Invalid input — please enter a number."</span>)
+
+<span class="k">def</span> <span class="f">calculate_catering_bill</span>(bill: <span class="f">float</span>, tip_pct: <span class="f">float</span>) -> <span class="f">dict</span>:
+    tip_amount = <span class="f">round</span>(bill * tip_pct / <span class="n">100</span>, <span class="n">2</span>)
+    <span class="k">return</span> {<span class="s">"subtotal"</span>: bill, <span class="s">"tip_pct"</span>: tip_pct,
+            <span class="s">"tip_amount"</span>: tip_amount, <span class="s">"total"</span>: <span class="f">round</span>(bill + tip_amount, <span class="n">2</span>)}
+
+<span class="k">def</span> <span class="f">main</span>():
+    bill    = get_float(<span class="s">"Enter catering bill amount ($): "</span>)
+    tip_pct = get_float(<span class="s">"Enter tip percentage (e.g. 18 or 18%): "</span>, parser=parse_tip)
+    costs   = calculate_catering_bill(bill, tip_pct)
+    <span class="f">print</span>(<span class="s">"\n--- Catering Cost Breakdown ---"</span>)
+    <span class="f">print</span>(<span class="s">f"  Subtotal : ${costs['subtotal']:.2f}"</span>)
+    <span class="f">print</span>(<span class="s">f"  Tip ({costs['tip_pct']}%) : ${costs['tip_amount']:.2f}"</span>)
+    <span class="f">print</span>(<span class="s">f"  Total    : ${costs['total']:.2f}"</span>)
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    main()</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECT 4 ===== -->
+<section class="project" id="p4">
+  <div class="project-header">
+    <div class="project-num">04</div>
+    <h2>Password Generator</h2>
+  </div>
+  <div class="project-tag">4_Password_generator.py</div>
+  <p class="project-desc">Cryptographically secure password generation using Python's <code>secrets</code> module. Guarantees at least one lowercase, uppercase, digit, and punctuation character.</p>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="demo4">▸ Live Demo</button>
+      <button class="tab" data-tab="code4">⟨/⟩ Source</button>
+    </div>
+
+    <div class="tab-content active" id="demo4">
+      <div class="demo">
+        <div class="demo-row">
+          <div class="field">
+            <label>Password Length (8 — 64)</label>
+            <input type="number" id="t4-len" placeholder="e.g. 16" min="8" max="64" value="16">
+          </div>
+          <button class="run" onclick="runPwd()">Generate</button>
+        </div>
+        <div class="result empty" id="t4-out">Click Generate to create a password.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="code4">
+<pre><span class="k">import</span> secrets
+<span class="k">import</span> string
+
+MIN_LENGTH = <span class="n">8</span>
+MAX_LENGTH = <span class="n">64</span>
+
+<span class="k">def</span> <span class="f">generate_password</span>(length: <span class="f">int</span>) -> <span class="f">str</span>:
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    <span class="k">while True</span>:
+        password = <span class="s">''</span>.join(secrets.choice(alphabet) <span class="k">for</span> _ <span class="k">in</span> <span class="f">range</span>(length))
+        <span class="k">if</span> (<span class="f">any</span>(c.islower() <span class="k">for</span> c <span class="k">in</span> password) <span class="k">and</span>
+            <span class="f">any</span>(c.isupper() <span class="k">for</span> c <span class="k">in</span> password) <span class="k">and</span>
+            <span class="f">any</span>(c.isdigit() <span class="k">for</span> c <span class="k">in</span> password) <span class="k">and</span>
+            <span class="f">any</span>(c <span class="k">in</span> string.punctuation <span class="k">for</span> c <span class="k">in</span> password)):
+            <span class="k">return</span> password
+
+<span class="k">def</span> <span class="f">get_password_length</span>() -> <span class="f">int</span>:
+    <span class="k">while True</span>:
+        <span class="k">try</span>:
+            length = <span class="f">int</span>(<span class="f">input</span>(<span class="s">f"Enter password length ({MIN_LENGTH}–{MAX_LENGTH}): "</span>))
+            <span class="k">if</span> MIN_LENGTH <= length <= MAX_LENGTH:
+                <span class="k">return</span> length
+            <span class="f">print</span>(<span class="s">f"Please enter a value between {MIN_LENGTH} and {MAX_LENGTH}."</span>)
+        <span class="k">except</span> ValueError:
+            <span class="f">print</span>(<span class="s">"Invalid input. Please enter a whole number."</span>)
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    length = get_password_length()
+    password = generate_password(length)
+    <span class="f">print</span>(<span class="s">f"\nGenerated password: {password}"</span>)</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECT 5 ===== -->
+<section class="project" id="p5">
+  <div class="project-header">
+    <div class="project-num">05</div>
+    <h2>BMI Calculator</h2>
+  </div>
+  <div class="project-tag">5_BMI_Calculator.py</div>
+  <p class="project-desc">Body Mass Index calculation with WHO classification bands and contextual health suggestions. Supports both metric (kg, cm) and imperial (lb, in) units.</p>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="demo5">▸ Live Demo</button>
+      <button class="tab" data-tab="code5">⟨/⟩ Source</button>
+    </div>
+
+    <div class="tab-content active" id="demo5">
+      <div class="demo">
+        <div class="demo-row">
+          <div class="field">
+            <label>Weight</label>
+            <input type="number" id="t5-w" placeholder="e.g. 70" step="any" min="0">
+          </div>
+          <div class="field">
+            <label>Weight Unit</label>
+            <select id="t5-wu">
+              <option value="kg">kg</option>
+              <option value="lb">lb</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Height</label>
+            <input type="number" id="t5-h" placeholder="e.g. 175" step="any" min="0">
+          </div>
+          <div class="field">
+            <label>Height Unit</label>
+            <select id="t5-hu">
+              <option value="cm">cm</option>
+              <option value="in">in</option>
+            </select>
+          </div>
+          <button class="run" onclick="runBMI()">Calculate</button>
+        </div>
+        <div class="result empty" id="t5-out">Enter your weight and height to calculate BMI.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="code5">
+<pre>DISCLAIMER = (<span class="s">"⚠  BMI applies to adults 18–65 only. NOT suitable for: "</span>
+              <span class="s">"children/teens, pregnant women, elderly 65+, or athletes."</span>)
+BANDS = [(<span class="n">18.5</span>,<span class="s">"Underweight"</span>,<span class="s">"Consult a dietitian; focus on nutrient-dense foods."</span>),
+         (<span class="n">25.0</span>,<span class="s">"Normal weight"</span>,<span class="s">"Great! Keep up balanced eating and regular exercise."</span>),
+         (<span class="n">30.0</span>,<span class="s">"Overweight"</span>,<span class="s">"Diet + activity changes can help; see your GP if unsure."</span>),
+         (<span class="n">35.0</span>,<span class="s">"Obese Class I"</span>,<span class="s">"Speak with a healthcare provider for a tailored plan."</span>),
+         (<span class="n">40.0</span>,<span class="s">"Obese Class II"</span>,<span class="s">"Medical guidance is strongly recommended."</span>),
+         (<span class="f">float</span>(<span class="s">"inf"</span>),<span class="s">"Obese Class III"</span>,<span class="s">"Please seek urgent medical support."</span>)]
+
+<span class="k">def</span> <span class="f">get_float</span>(prompt):
+    <span class="k">while True</span>:
+        <span class="k">try</span>:
+            v = <span class="f">float</span>(<span class="f">input</span>(prompt))
+            <span class="k">if</span> v > <span class="n">0</span>: <span class="k">return</span> v
+            <span class="k">raise</span> ValueError
+        <span class="k">except</span> ValueError:
+            <span class="f">print</span>(<span class="s">"  ✗ Enter a positive number."</span>)
+
+<span class="k">def</span> <span class="f">get_unit</span>(label, opts):
+    <span class="k">while</span> (u := <span class="f">input</span>(<span class="s">f"{label} unit ({'/'.join(opts)}): "</span>).strip().lower()) <span class="k">not in</span> opts:
+        <span class="f">print</span>(<span class="s">f"  ✗ Choose: {'/'.join(opts)}"</span>)
+    <span class="k">return</span> u
+
+w = get_float(<span class="s">"Weight: "</span>)
+kg = w * (<span class="n">0.453592</span> <span class="k">if</span> get_unit(<span class="s">"Weight"</span>, [<span class="s">"kg"</span>,<span class="s">"lb"</span>]) == <span class="s">"lb"</span> <span class="k">else</span> <span class="n">1</span>)
+h = get_float(<span class="s">"Height: "</span>)
+m  = h * (<span class="n">0.0254</span> <span class="k">if</span> get_unit(<span class="s">"Height"</span>, [<span class="s">"cm"</span>,<span class="s">"in"</span>]) == <span class="s">"in"</span>  <span class="k">else</span> <span class="n">0.01</span>)
+
+bmi = kg / m ** <span class="n">2</span>
+_, cat, tip = <span class="f">next</span>(b <span class="k">for</span> b <span class="k">in</span> BANDS <span class="k">if</span> bmi < b[<span class="n">0</span>])
+<span class="f">print</span>(<span class="s">f"\n  BMI: {bmi:.1f} — {cat}\n  {tip}\n\n{DISCLAIMER}"</span>)</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="ornament">~ ◇ ~</div>
+  <div>Designed &amp; built with care · Jay Liu · Week 1, May 2026</div>
+  <div style="margin-top: 8px;">Source on <a href="https://github.com/Zhongyi-Jay-Liu/claude-camp-w1" target="_blank">GitHub</a></div>
+</footer>
+
+</div>
+
+<script>
+// ===== Tab switching =====
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    const card = tab.closest('.card');
+    card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    card.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(target).classList.add('active');
+  });
+});
+
+// ===== Project 1: Temperature Converter =====
+function runTemp() {
+  const t = parseFloat(document.getElementById('t1-temp').value);
+  const u = document.getElementById('t1-unit').value;
+  const out = document.getElementById('t1-out');
+  if (isNaN(t)) { out.className = 'result empty'; out.textContent = '⚠  Please enter a numeric temperature.'; return; }
+  out.className = 'result';
+  if (u === 'C') {
+    const f = (t * 9/5) + 32;
+    out.innerHTML = `<strong>${t}°C</strong>  =  <strong>${f.toFixed(2)}°F</strong>`;
+  } else {
+    const c = (t - 32) * 5/9;
+    out.innerHTML = `<strong>${t}°F</strong>  =  <strong>${c.toFixed(2)}°C</strong>`;
+  }
+}
+
+// ===== Project 2: Greeting =====
+function runGreet() {
+  const name = document.getElementById('t2-name').value.trim();
+  const age = parseInt(document.getElementById('t2-age').value);
+  const out = document.getElementById('t2-out');
+  if (!name) { out.className = 'result empty'; out.textContent = '⚠  Name cannot be empty.'; return; }
+  if (isNaN(age) || age < 1 || age >= 150) { out.className = 'result empty'; out.textContent = '⚠  Age must be between 1 and 149.'; return; }
+  let group;
+  if (age < 10) group = 'a single-digit superstar';
+  else { const decade = Math.floor(age / 10) * 10; group = `a proud member of the ${decade}s club`; }
+  out.className = 'result';
+  out.innerHTML = `Hello, <strong>${name}</strong>! 👋\nYou are <strong>${age}</strong> years old — ${group}!`;
+}
+
+// ===== Project 3: Catering =====
+function runTip() {
+  const bill = parseFloat(document.getElementById('t3-bill').value);
+  const rawTip = document.getElementById('t3-tip').value.trim().replace('%', '').trim();
+  const tipPct = parseFloat(rawTip);
+  const out = document.getElementById('t3-out');
+  if (isNaN(bill) || bill < 0) { out.className = 'result empty'; out.textContent = '⚠  Enter a non-negative bill amount.'; return; }
+  if (isNaN(tipPct) || tipPct < 0) { out.className = 'result empty'; out.textContent = '⚠  Enter a valid tip percentage.'; return; }
+  const tip = Math.round(bill * tipPct) / 100;
+  const tipAmt = Math.round(bill * tipPct / 100 * 100) / 100;
+  const total = Math.round((bill + tipAmt) * 100) / 100;
+  out.className = 'result';
+  out.innerHTML =
+`--- Catering Cost Breakdown ---
+  Subtotal      : <strong>$${bill.toFixed(2)}</strong>
+  Tip (${tipPct}%)   : <strong>$${tipAmt.toFixed(2)}</strong>
+  ──────────────────────
+  Total         : <strong>$${total.toFixed(2)}</strong>`;
+}
+
+// ===== Project 4: Password =====
+function runPwd() {
+  const len = parseInt(document.getElementById('t4-len').value);
+  const out = document.getElementById('t4-out');
+  if (isNaN(len) || len < 8 || len > 64) { out.className = 'result empty'; out.textContent = '⚠  Length must be between 8 and 64.'; return; }
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const digits = '0123456789';
+  const punct = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+  const all = lower + upper + digits + punct;
+  function rand(s) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return s[a[0] % s.length];
+  }
+  let pwd;
+  do {
+    pwd = '';
+    for (let i = 0; i < len; i++) pwd += rand(all);
+  } while (!/[a-z]/.test(pwd) || !/[A-Z]/.test(pwd) || !/[0-9]/.test(pwd) || !/[!-/:-@\[-`{-~]/.test(pwd));
+  out.className = 'result';
+  out.innerHTML = `Generated password:\n<strong>${pwd}</strong>`;
+}
+
+// ===== Project 5: BMI =====
+function runBMI() {
+  const w = parseFloat(document.getElementById('t5-w').value);
+  const wu = document.getElementById('t5-wu').value;
+  const h = parseFloat(document.getElementById('t5-h').value);
+  const hu = document.getElementById('t5-hu').value;
+  const out = document.getElementById('t5-out');
+  if (isNaN(w) || w <= 0) { out.className = 'result empty'; out.textContent = '⚠  Enter a positive weight.'; return; }
+  if (isNaN(h) || h <= 0) { out.className = 'result empty'; out.textContent = '⚠  Enter a positive height.'; return; }
+  const kg = wu === 'lb' ? w * 0.453592 : w;
+  const m  = hu === 'in' ? h * 0.0254   : h * 0.01;
+  const bmi = kg / (m * m);
+  const bands = [
+    [18.5, 'Underweight', 'Consult a dietitian; focus on nutrient-dense foods.'],
+    [25.0, 'Normal weight', 'Great! Keep up balanced eating and regular exercise.'],
+    [30.0, 'Overweight', 'Diet + activity changes can help; see your GP if unsure.'],
+    [35.0, 'Obese Class I', 'Speak with a healthcare provider for a tailored plan.'],
+    [40.0, 'Obese Class II', 'Medical guidance is strongly recommended.'],
+    [Infinity, 'Obese Class III', 'Please seek urgent medical support.']
+  ];
+  const [, cat, tip] = bands.find(b => bmi < b[0]);
+  out.className = 'result';
+  out.innerHTML =
+`  BMI: <strong>${bmi.toFixed(1)}</strong> — <strong>${cat}</strong>
+  ${tip}
+
+⚠  BMI applies to adults 18–65 only. NOT suitable for
+   children/teens, pregnant women, elderly 65+, or athletes.`;
+}
+</script>
+
+</body>
+</html>
